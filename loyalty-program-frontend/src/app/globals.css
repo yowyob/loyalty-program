@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  /* Warm Brown & White Theme */
+  --background: #fdfbf7;
+  --foreground: #4a3b32;
+  --card: #ffffff;
+  --card-foreground: #4a3b32;
+  --popover: #ffffff;
+  --popover-foreground: #4a3b32;
+  --primary: #8d6e63;
+  --primary-foreground: #ffffff;
+  --secondary: #efebe9;
+  --secondary-foreground: #4a3b32;
+  --muted: #f5f2f0;
+  --muted-foreground: #8c7b70;
+  --accent: #d7ccc8;
+  --accent-foreground: #4a3b32;
+  --destructive: #d32f2f;
+  --border: #e6e0d8;
+  --input: #e6e0d8;
+  --ring: #8d6e63;
+  --radius: 0.3rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}

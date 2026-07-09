@@ -1,0 +1,58 @@
+spring:
+  # Activer avec : SPRING_PROFILES_ACTIVE=dev,stub ou -Dspring-boot.run.profiles=dev,stub
+  application:
+    name: loyaulty-program
+
+  # ── R2DBC (développement local) ──────────────────────────────
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:loyalty_db}
+    username: ${DB_USER:loyalty_user}
+    password: ${DB_PASSWORD:loyalty_pass}
+    pool:
+      initial-size: 2
+      max-size: 5
+
+  # ── Flyway ───────────────────────────────────────────────────
+  flyway:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:loyalty_db}
+    user: ${DB_USER:loyalty_user}
+    password: ${DB_PASSWORD:loyalty_pass}
+
+  # ── Kafka ─────────────────────────────────────────────────────
+  kafka:
+    bootstrap-servers: localhost:9092
+
+  # ── Sécurité OAuth2 (Keycloak local optionnel) ────────────────
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/loyalty-dev
+
+# ── SpringDoc / Swagger (dev) ─────────────────────────────────
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+
+# ── Serveur ───────────────────────────────────────────────────
+server:
+  # 8081 souvent occupé (ex. Adminer) — surcharge via SERVER_PORT si besoin
+  port: ${SERVER_PORT:8082}
+
+app:
+  dev:
+    default-tenant-id: 00000000-0000-0000-0000-000000000001
+
+# ── Logs verbeux en dev ───────────────────────────────────────
+logging:
+  level:
+    root: DEBUG
+    com.yowyob.loyaulty: TRACE
+    org.springframework.r2dbc: DEBUG
+    io.r2dbc.postgresql: DEBUG
+    org.flywaydb: DEBUG

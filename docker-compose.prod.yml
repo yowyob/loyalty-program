@@ -1,0 +1,78 @@
+services:
+  app:
+    image: "${APP_IMAGE:?APP_IMAGE requis}"
+    container_name: loyalty-program
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: "8081"
+      DB_HOST: "loyalty-db"
+      DB_PORT: "5432"
+      DB_NAME: "loyalty_db"
+      DB_USER: "loyalty_user"
+      DB_PASSWORD: "3LFFLaNEoUiLe3iBxNjGipYm"
+      REDIS_HOST: "loyalty-redis"
+      REDIS_PORT: "6379"
+      KAFKA_BROKERS: "yowyob-shared-kafka:9092"
+      KERNEL_CORE_URL: "https://kernel-core.yowyob.com"
+      KERNEL_SERVICE_CLIENT_ID: "loyalty-service"
+      KERNEL_SERVICE_CLIENT_SECRET: "by4dMR5LNAQrFfCSagwELWmrvmu91NFfFpCz6hi2"
+      JWT_JWK_SET_URI: "https://kernel-core.yowyob.com/.well-known/jwks.json"
+      BONIFICATION_ENABLED: "false"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8081/actuator/health >/dev/null 2>&1 || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.loyalty.rule=Host(`loyalty.yowyob.com`)"
+      - "traefik.http.routers.loyalty.entrypoints=websecure"
+      - "traefik.http.routers.loyalty.tls=true"
+      - "traefik.http.routers.loyalty.tls.certresolver=letsencrypt"
+      - "traefik.http.services.loyalty.loadbalancer.server.port=8081"
+      - "traefik.docker.network=yowyob"
+    depends_on:
+      loyalty-db: { condition: service_healthy }
+      loyalty-redis: { condition: service_healthy }
+    networks: [yowyob, loyalty-net]
+
+  loyalty-db:
+    image: postgres:16-alpine
+    container_name: loyalty-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: "loyalty_db"
+      POSTGRES_USER: "loyalty_user"
+      POSTGRES_PASSWORD: "3LFFLaNEoUiLe3iBxNjGipYm"
+    volumes: [loyalty-db-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U loyalty_user -d loyalty_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+    networks: [loyalty-net]
+
+  loyalty-redis:
+    image: redis:7-alpine
+    container_name: loyalty-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: [loyalty-redis-data:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [loyalty-net]
+
+volumes:
+  loyalty-db-data:
+  loyalty-redis-data:
+
+networks:
+  yowyob:
+    external: true
+    name: yowyob
+  loyalty-net:
+    name: loyalty-net
