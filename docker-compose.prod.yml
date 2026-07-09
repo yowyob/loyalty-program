@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     environment:
       SERVER_PORT: "8081"
+      SPRING_PROFILES_ACTIVE: "stub"
       DB_HOST: "loyalty-db"
       DB_PORT: "5432"
       DB_NAME: "loyalty_db"
