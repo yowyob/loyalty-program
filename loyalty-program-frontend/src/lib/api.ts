@@ -24,6 +24,10 @@ function getAuthHeaders(): HeadersInit {
         typeof window !== "undefined"
             ? sessionStorage.getItem("loyalty_dev_api_key")
             : null;
+    const organizationId =
+        typeof window !== "undefined"
+            ? sessionStorage.getItem("loyalty_organization_id")
+            : null;
     return {
         "Content-Type": "application/json",
         ...(token
@@ -31,6 +35,7 @@ function getAuthHeaders(): HeadersInit {
             : apiKey
                 ? { "X-Api-Key": apiKey }
                 : {}),
+        ...(organizationId ? { "X-Organization-Id": organizationId } : {}),
     };
 }
 
@@ -197,7 +202,9 @@ export interface CreateRuleRequest {
 export interface IncomingEventRequest {
     eventType: string;
     memberId: string;
+    /** ISO-8601 ; obligatoire côté backend (IncomingEventRequest.occurredAt est @NotNull). */
     occurredAt: string;
+    /** Sac libre de données métier, ex. { amount: 49.90 } — pas de champs top-level comme "amount". */
     payload?: Record<string, unknown>;
 }
 
@@ -593,10 +600,16 @@ export const platformApi = {
 export interface LoginRequest {
     email: string;
     password: string;
+    /** Organisation KernelCore à sélectionner ; requis si l'acteur en a plusieurs (voir 400 ORGANIZATION_SELECTION_REQUIRED). */
+    organizationId?: string;
 }
 
 export interface LoginResponse {
     token: string;
+    /** À renvoyer sur chaque appel suivant via le header X-Organization-Id. */
+    organizationId: string;
+    organizationCode: string;
+    organizationName: string;
 }
 
 export const authApi = {
