@@ -27,7 +27,9 @@ services:
       start_period: 120s
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.loyalty.rule=Host(`loyalty.yowyob.com`)"
+      - "traefik.http.routers.loyalty.rule=Host(`loyalty.yowyob.com`) && PathPrefix(`/loyalty-api`)"
+      - "traefik.http.middlewares.loyalty-strip.stripprefix.prefixes=/loyalty-api"
+      - "traefik.http.routers.loyalty.middlewares=loyalty-strip"
       - "traefik.http.routers.loyalty.entrypoints=websecure"
       - "traefik.http.routers.loyalty.tls=true"
       - "traefik.http.routers.loyalty.tls.certresolver=letsencrypt"
