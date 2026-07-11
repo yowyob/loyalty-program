@@ -6,6 +6,7 @@ services:
     environment:
       SERVER_PORT: "8081"
       SPRING_PROFILES_ACTIVE: "stub"
+      SPRING_LIQUIBASE_ENABLED: "false"  # schema legacy Flyway (EN) incompatible avec changesets 006-022 (FR) — a reconcilier par les devs avant reactivation
       DB_HOST: "loyalty-db"
       DB_PORT: "5432"
       DB_NAME: "loyalty_db"
@@ -28,6 +29,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.loyalty.rule=Host(`loyalty.yowyob.com`) && PathPrefix(`/loyalty-api`)"
+      - "traefik.http.routers.loyalty.priority=100"
       - "traefik.http.middlewares.loyalty-strip.stripprefix.prefixes=/loyalty-api"
       - "traefik.http.routers.loyalty.middlewares=loyalty-strip"
       - "traefik.http.routers.loyalty.entrypoints=websecure"
