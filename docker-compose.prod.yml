@@ -15,10 +15,10 @@ services:
       REDIS_HOST: "loyalty-redis"
       REDIS_PORT: "6379"
       KAFKA_BROKERS: "yowyob-shared-kafka:9092"
-      KERNEL_CORE_URL: "https://kernel-core.yowyob.com"
+      KERNEL_CORE_URL: "https://kernel-core.yowyob.com/kernel-api"
       KERNEL_SERVICE_CLIENT_ID: "loyalty-service"
       KERNEL_SERVICE_CLIENT_SECRET: "by4dMR5LNAQrFfCSagwELWmrvmu91NFfFpCz6hi2"
-      JWT_JWK_SET_URI: "https://kernel-core.yowyob.com/.well-known/jwks.json"
+      JWT_JWK_SET_URI: "https://kernel-core.yowyob.com/kernel-api/.well-known/jwks.json"
       BONIFICATION_ENABLED: "false"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8081/actuator/health >/dev/null 2>&1 || exit 1"]
